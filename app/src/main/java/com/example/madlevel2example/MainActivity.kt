@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
         binding.rvReminders.adapter = reminderAdapter
         binding.rvReminders.addItemDecoration(DividerItemDecoration(this@MainActivity, DividerItemDecoration.VERTICAL))
 
+        createItemTouchHelper().attachToRecyclerView(rvReminders)
     }
 
     private fun addReminder(reminder: String) {
@@ -56,4 +57,30 @@ class MainActivity : AppCompatActivity() {
             Snackbar.make(etReminder, "You must fill in the input field!", Snackbar.LENGTH_SHORT).show()
         }
     }
+
+    private fun createItemTouchHelper(): ItemTouchHelper {
+
+        // Callback which is used to create the ItemTouch helper. Only enables left swipe.
+        // Use ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) to also enable right swipe.
+        val callback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+
+            // Enables or Disables the ability to move items up and down.
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            // Callback triggered when a user swiped an item.
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                reminders.removeAt(position)
+                reminderAdapter.notifyDataSetChanged()
+            }
+        }
+        return ItemTouchHelper(callback)
+    }
+
 }
